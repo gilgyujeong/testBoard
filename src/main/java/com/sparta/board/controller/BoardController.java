@@ -2,7 +2,6 @@ package com.sparta.board.controller;
 
 import com.sparta.board.dto.BoardRequestDto;
 import com.sparta.board.dto.BoardResponseDto;
-import com.sparta.board.entity.Board;
 import com.sparta.board.service.BoardService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +19,7 @@ public class BoardController {
 
     // 게시글 작성
     @PostMapping("/board")
-    public BoardResponseDto createMemo(@RequestBody BoardRequestDto requestDto) {
+    public BoardResponseDto createBoard(@RequestBody BoardRequestDto requestDto) {
         return boardService.createBoard(requestDto);
     }
 
@@ -32,7 +31,7 @@ public class BoardController {
 
     // 선택한 게시글 조회
     @GetMapping("/board/{id}")
-    public Board getBoardOne(@PathVariable Long id) {
+    public BoardResponseDto getBoardOne(@PathVariable Long id) {
         return boardService.getBoardOne(id);
     }
 

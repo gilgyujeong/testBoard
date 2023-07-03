@@ -26,7 +26,7 @@ public class BoardService {
         Board saveBoard = boardRepository.save(board);
 
         // Entity -> ResponseDto
-        BoardResponseDto boardResponseDto = new BoardResponseDto(board);
+        BoardResponseDto boardResponseDto = new BoardResponseDto(saveBoard);
 
         return boardResponseDto;
     }
@@ -61,9 +61,9 @@ public class BoardService {
         return id;
     }
 
-    public Board getBoardOne(Long id) {
+    public BoardResponseDto getBoardOne(Long id) {
         Board board = findBoard(id);
-        return board;
+        return new BoardResponseDto(board); // 이동은 Dto 로!!!
     }
 
     private Board findBoard(Long id) {
