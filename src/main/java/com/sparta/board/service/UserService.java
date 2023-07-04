@@ -27,6 +27,7 @@ public class UserService {
         this.jwtUtil = jwtUtil;
     }
 
+    // 회원 가입
     public SignupResponseDto signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword()); // 패스워드를 암호화
@@ -42,23 +43,24 @@ public class UserService {
         userRepository.save(user); // 데이터베이스에 user 객체 저장
         return new SignupResponseDto("회원가입 성공", HttpStatus.OK.value());
     }
-    public LoginResponseDto login(LoginRequestDto requestDto, HttpServletResponse res) {
-        String username = requestDto.getUsername(); // 사용자명
-        String password = requestDto.getPassword(); // 비밀번호
-
-        // 사용자 확인
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new IllegalArgumentException("등록된 사용자가 없습니다.")
-        );
-        // 비밀번호 확인
-        if (!passwordEncoder.matches(password, user.getPassword())) { // matches 함수를 사용하면 암호화된 비밀번호와도 비교 가능.
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-
-        // JWT 생성 및 쿠키에 저장
-        String token = jwtUtil.createToken(user.getUsername());
-        jwtUtil.addJwtToCookie(token, res);
-
-        return new LoginResponseDto("로그인 성공", HttpStatus.OK.value());
-    }
+    // 로그인
+//    public LoginResponseDto login(LoginRequestDto requestDto, HttpServletResponse res) {
+//        String username = requestDto.getUsername(); // 사용자명
+//        String password = requestDto.getPassword(); // 비밀번호
+//
+//        // 사용자 확인
+//        User user = userRepository.findByUsername(username).orElseThrow(() ->
+//                new IllegalArgumentException("등록된 사용자가 없습니다.")
+//        );
+//        // 비밀번호 확인
+//        if (!passwordEncoder.matches(password, user.getPassword())) { // matches 함수를 사용하면 암호화된 비밀번호와도 비교 가능.
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+//        }
+//
+//        // JWT 생성 및 쿠키에 저장
+//        String token = jwtUtil.createToken(user.getUsername());
+//        jwtUtil.addJwtToCookie(token, res);
+//
+//        return new LoginResponseDto("로그인 성공", HttpStatus.OK.value());
+//    }
 }

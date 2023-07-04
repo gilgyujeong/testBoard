@@ -80,6 +80,15 @@ public class JwtUtil {
         throw new NullPointerException("Not Found Token");
     }
 
+    // header 토큰을 가져오기
+    public String bringToken(HttpServletRequest req) {
+        String bearerToken = req.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
     // 토큰 검증
     public boolean validateToken(String token) {
         try {

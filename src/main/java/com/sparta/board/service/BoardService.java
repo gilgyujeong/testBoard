@@ -3,9 +3,15 @@ package com.sparta.board.service;
 import com.sparta.board.dto.BoardRequestDto;
 import com.sparta.board.dto.BoardResponseDto;
 import com.sparta.board.entity.Board;
+import com.sparta.board.entity.User;
+import com.sparta.board.jwt.JwtUtil;
 import com.sparta.board.repository.BoardRepository;
+import com.sparta.board.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -13,22 +19,43 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository, UserRepository userRepository, JwtUtil jwtUtil) {
         this.boardRepository = boardRepository;
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
-    public BoardResponseDto createBoard(BoardRequestDto requestDto) {
-        // RequestDto -> Entity
-        Board board = new Board(requestDto);
+    public BoardResponseDto createBoard(BoardRequestDto requestDto, HttpServletRequest req) {
+        // 쿠키에 저장된 JWT 가져오기
+        String token = jwtUtil.getTokenFromRequest(req);
+        Claims claims;
 
-        // DB 저장
-        Board saveBoard = boardRepository.save(board);
+        // 가져온 토큰 검증
+        if (StringUtils.hasText(token)) {
+            token = jwtUtil.substringToken(token);
+            if (jwtUtil.validateToken(token)) {
+                claims = jwtUtil.getUserInfoFromToken(token);
+            } else {
+                throw new IllegalArgumentException("유효하지 않는 토큰 입니다.");
+            }
+            // 토큰에서 가져온 유저 정보
+            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(() ->
+                    new IllegalArgumentException("사용자가 존재하지 않습니다.")
+            );
+            // RequestDto -> Entity
+            Board board = new Board(requestDto, user.getUsername());
+            // DB 저장
+            Board saveBoard = boardRepository.save(board);
+            // Entity -> ResponseDto
+            BoardResponseDto boardResponseDto = new BoardResponseDto(saveBoard);
 
-        // Entity -> ResponseDto
-        BoardResponseDto boardResponseDto = new BoardResponseDto(saveBoard);
-
-        return boardResponseDto;
+            return boardResponseDto;
+        } else {
+            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
+        }
     }
 
     public List<BoardResponseDto> getBoard() {
@@ -37,16 +64,36 @@ public class BoardService {
     }
 
     @Transactional
-    public Long updateBoard(Long id, BoardRequestDto requestDto) {
-        // 해당 메모가 DB에 존재하는지 확인
-        Board board = findBoard(id);
-        // board 내용 수정
-        if (requestDto.getPassword().equals(board.getPassword())) {
-            board.update(requestDto);
+    public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto, HttpServletRequest req) {
+        // 쿠키에 저장된 JWT 가져오기
+        String token = jwtUtil.getTokenFromRequest(req);
+        Claims claims;
+
+        // 가져온 토큰 검증
+        if (StringUtils.hasText(token)) {
+            token = jwtUtil.substringToken(token);
+            if (jwtUtil.validateToken(token)) {
+                claims = jwtUtil.getUserInfoFromToken(token);
+            } else {
+                throw new IllegalArgumentException("유효하지 않는 토큰 입니다.");
+            }
+            // 토큰에서 가져온 유저 정보
+            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(() ->
+                            new IllegalArgumentException("사용자가 존재하지 않습니다.")
+            );
+            // 해당 메모가 DB에 존재하는지 확인
+            Board board = findBoard(id);
+            // 동일한 username 인지 확인
+            if (board.getUsername().equals(user.getUsername())) {
+                // board 내용 수정
+                board.update(requestDto);
+                return new BoardResponseDto(board);
+            } else {
+                throw new IllegalArgumentException("사용자 정보가 다릅니다.");
+            }
         } else {
-            throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
         }
-        return id;
     }
 
     public Long deleteBoard(Long id, BoardRequestDto requestDto) {

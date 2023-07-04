@@ -21,9 +21,6 @@ public class Board extends Timestamped {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "writer", nullable = false, length = 20)
-    private String writer;
-
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
@@ -31,16 +28,18 @@ public class Board extends Timestamped {
     @Column(name = "password", nullable = false)
     private String password;
 
-    public Board(BoardRequestDto boardRequestDto) {
+    @Column(nullable = false)
+    private String username;
+
+    public Board(BoardRequestDto boardRequestDto, String username) {
         this.title = boardRequestDto.getTitle();
-        this.writer = boardRequestDto.getWriter();
         this.contents = boardRequestDto.getContents();
         this.password = boardRequestDto.getPassword();
+        this.username = username;
     }
 
     public void update(BoardRequestDto boardRequestDto) {
         this.title = boardRequestDto.getTitle();
-        this.writer = boardRequestDto.getWriter();
         this.contents = boardRequestDto.getContents();
     }
 }

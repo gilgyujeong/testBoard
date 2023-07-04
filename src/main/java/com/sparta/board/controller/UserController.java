@@ -30,6 +30,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    // 회원가입
     @ResponseBody
     @PostMapping("/auth/signup")
     public SignupResponseDto signup(@RequestBody @Valid SignupRequestDto requestDto, BindingResult bindingResult) {
@@ -43,13 +44,15 @@ public class UserController {
         }
         return userService.signup(requestDto);
     }
-    @ResponseBody
-    @PostMapping("/auth/login")
-    public LoginResponseDto login(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
-        try {
-            return userService.login(requestDto, res);
-        } catch (Exception e) {
-            return new LoginResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value());
-        }
-    }
+
+    // 로그인
+//    @ResponseBody
+//    @PostMapping("/auth/login")
+//    public LoginResponseDto login(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
+//        try {
+//            return userService.login(requestDto, res);
+//        } catch (Exception e) {
+//            return new LoginResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+//        }
+//    }
 }
