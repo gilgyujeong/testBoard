@@ -2,6 +2,7 @@ package com.sparta.board.controller;
 
 import com.sparta.board.dto.BoardRequestDto;
 import com.sparta.board.dto.BoardResponseDto;
+import com.sparta.board.dto.DeleteResponseDto;
 import com.sparta.board.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class BoardController {
 
     // 게시글 삭제
     @DeleteMapping("/board/{id}")
-    public Long deleteBoard(@PathVariable Long id, @RequestBody BoardRequestDto requestDto) {
-        return boardService.deleteBoard(id, requestDto);
+    public DeleteResponseDto deleteBoard(@PathVariable Long id, HttpServletRequest req) {
+        return boardService.deleteBoard(id, req);
     }
 }
