@@ -5,6 +5,7 @@ import com.sparta.board.dto.LoginResponseDto;
 import com.sparta.board.dto.SignupRequestDto;
 import com.sparta.board.dto.SignupResponseDto;
 import com.sparta.board.entity.User;
+import com.sparta.board.entity.UserRoleEnum;
 import com.sparta.board.jwt.JwtUtil;
 import com.sparta.board.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +28,8 @@ public class UserService {
         this.jwtUtil = jwtUtil;
     }
 
+    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+
     // 회원 가입
     public SignupResponseDto signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
@@ -38,8 +41,17 @@ public class UserService {
             throw new IllegalArgumentException("중복된 사용자가 있습니다.");
         }
 
+        // 사용자 ROLE 확인
+        UserRoleEnum role = UserRoleEnum.USER;
+        if (requestDto.isAdmin()) {
+            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
+                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+            }
+            role = UserRoleEnum.ADMIN;
+        }
+
         // 사용자 등록
-        User user = new User(username, password);
+        User user = new User(username, password, role);
         userRepository.save(user); // 데이터베이스에 user 객체 저장
         return new SignupResponseDto("회원가입 성공", HttpStatus.OK.value());
     }
