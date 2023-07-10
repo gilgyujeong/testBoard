@@ -57,15 +57,11 @@ public class JwtUtil {
     }
 
     // JWT Cookie 에 저장
-    public void addJwtToCookie(String token, HttpServletResponse res) {
+    public void addJwtToHeader(String token, HttpServletResponse res) {
         try {
             token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
 
-            Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
-            cookie.setPath("/");
-
-            // Response 객체에 Cookie 추가
-            res.addCookie(cookie);
+            res.addHeader(AUTHORIZATION_HEADER, token);
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage());
         }
@@ -81,10 +77,15 @@ public class JwtUtil {
     }
 
     // header 토큰을 가져오기
-    public String bringToken(HttpServletRequest req) {
+    public String getTokenFromHeader(HttpServletRequest req) {
         String bearerToken = req.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(7);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) { //hasText 공백이 있는지 null 인지 확인
+            try {
+                bearerToken = URLDecoder.decode(bearerToken, "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode
+                return bearerToken.substring(7);
+            } catch (UnsupportedEncodingException e) {
+                return null;
+            }
         }
         return null;
     }
@@ -94,7 +95,7 @@ public class JwtUtil {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException | SignatureException e) {
+        } catch (SecurityException | MalformedJwtException e) {
             logger.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             logger.error("Expired JWT token, 만료된 JWT token 입니다.");

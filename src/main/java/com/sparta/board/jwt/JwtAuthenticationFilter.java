@@ -2,7 +2,6 @@ package com.sparta.board.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.board.dto.LoginRequestDto;
-import com.sparta.board.entity.UserRoleEnum;
 import com.sparta.board.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,7 +49,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
 
         String token = jwtUtil.createToken(username);
-        jwtUtil.addJwtToCookie(token, response);
+        jwtUtil.addJwtToHeader(token, response);
     }
 
     @Override

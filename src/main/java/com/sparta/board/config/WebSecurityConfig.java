@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -66,19 +67,12 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
-        http.formLogin((formLogin) ->
-                formLogin
-                        .loginPage("/api/auth/login-page").permitAll()
-        );
+//        http.formLogin(Customizer.withDefaults());
 
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        // 접근 불가 페이지
-        http.exceptionHandling((exceptionHandling) ->
-                exceptionHandling.accessDeniedPage("/forbidden.html")
-        );
         return http.build();
     }
 }

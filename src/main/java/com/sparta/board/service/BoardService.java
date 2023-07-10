@@ -32,12 +32,13 @@ public class BoardService {
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, HttpServletRequest req) {
         // 쿠키에 저장된 JWT 가져오기
-        String token = jwtUtil.getTokenFromRequest(req);
+        System.out.println("test");
+        String token = jwtUtil.getTokenFromHeader(req);
         Claims claims;
-
+        System.out.println("token = " + token);
         // 가져온 토큰 검증
         if (StringUtils.hasText(token)) {
-            token = jwtUtil.substringToken(token);
+            System.out.println("검증");
             if (jwtUtil.validateToken(token)) {
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else {
@@ -68,12 +69,11 @@ public class BoardService {
     @Transactional
     public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto, HttpServletRequest req) {
         // 쿠키에 저장된 JWT 가져오기
-        String token = jwtUtil.getTokenFromRequest(req);
+        String token = jwtUtil.getTokenFromHeader(req);
         Claims claims;
 
         // 가져온 토큰 검증
         if (StringUtils.hasText(token)) {
-            token = jwtUtil.substringToken(token);
             if (jwtUtil.validateToken(token)) {
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else {
@@ -100,12 +100,11 @@ public class BoardService {
 
     public DeleteResponseDto deleteBoard(Long id, HttpServletRequest req) {
         // 쿠키에 저장된 JWT 가져오기
-        String token = jwtUtil.getTokenFromRequest(req);
+        String token = jwtUtil.getTokenFromHeader(req);
         Claims claims;
 
         // 가져온 토큰 검증
         if (StringUtils.hasText(token)) {
-            token = jwtUtil.substringToken(token);
             if (jwtUtil.validateToken(token)) {
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else {
