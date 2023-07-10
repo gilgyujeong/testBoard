@@ -52,7 +52,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = jwtUtil.createToken(username);
         jwtUtil.addJwtToHeader(token, response);
         response.setStatus(200);
+        response.setCharacterEncoding("utf-8");
         response.getWriter().write("로그인성공 : " + response.getStatus());
+
     }
 
     @Override
