@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity// JPA가 관리할 수 있는 Entity 클래스 지정
 @Getter
 @Setter
@@ -30,6 +32,9 @@ public class Board extends Timestamped {
 
     @Column(nullable = false)
     private String username;
+
+    @OneToMany(mappedBy = "board")
+    private List<Comment> comments;
 
     public Board(BoardRequestDto boardRequestDto, String username) {
         this.title = boardRequestDto.getTitle();
