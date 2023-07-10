@@ -5,6 +5,7 @@ import com.sparta.board.dto.BoardResponseDto;
 import com.sparta.board.dto.DeleteResponseDto;
 import com.sparta.board.entity.Board;
 import com.sparta.board.entity.User;
+import com.sparta.board.entity.UserRoleEnum;
 import com.sparta.board.jwt.JwtUtil;
 import com.sparta.board.repository.BoardRepository;
 import com.sparta.board.repository.UserRepository;
@@ -86,7 +87,7 @@ public class BoardService {
             // 해당 메모가 DB에 존재하는지 확인
             Board board = findBoard(id);
             // 동일한 username 인지 확인
-            if (board.getUsername().equals(user.getUsername())) {
+            if (board.getUsername().equals(user.getUsername()) || user.getRole().equals(UserRoleEnum.ADMIN)) {
                 // board 내용 수정
                 board.update(requestDto);
                 return new BoardResponseDto(board);
@@ -117,7 +118,7 @@ public class BoardService {
             // 해당 메모가 DB에 존재하는지 확인
             Board board = findBoard(id);
             // 동일한 username 인지 확인
-            if (board.getUsername().equals(user.getUsername())) {
+            if (board.getUsername().equals(user.getUsername()) || user.getRole().equals(UserRoleEnum.ADMIN)) {
                 // board 삭제
                 boardRepository.delete(board);
                 return new DeleteResponseDto("게시글 삭제 성공", HttpStatus.OK.value());
