@@ -9,7 +9,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "users")
 public class User {
@@ -26,9 +25,6 @@ public class User {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
-
-    @OneToMany(mappedBy = "user")
-    private List<Comment> comments;
 
     public User(String username, String password, UserRoleEnum role) {
         this.username = username;

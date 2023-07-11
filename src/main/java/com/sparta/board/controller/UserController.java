@@ -1,12 +1,8 @@
 package com.sparta.board.controller;
 
-import com.sparta.board.dto.LoginRequestDto;
-import com.sparta.board.dto.LoginResponseDto;
 import com.sparta.board.dto.SignupRequestDto;
 import com.sparta.board.dto.SignupResponseDto;
-import com.sparta.board.jwt.JwtUtil;
 import com.sparta.board.service.UserService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,7 +33,7 @@ public class UserController {
         // 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if (fieldErrors.size() > 0) {
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            for (FieldError fieldError : fieldErrors) {
                 log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
             }
             return new SignupResponseDto("fail", HttpStatus.BAD_REQUEST.value()); // 오류발생시 fail 출력
@@ -45,14 +41,4 @@ public class UserController {
         return userService.signup(requestDto);
     }
 
-    // 로그인
-//    @ResponseBody
-//    @PostMapping("/auth/login")
-//    public LoginResponseDto login(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
-//        try {
-//            return userService.login(requestDto, res);
-//        } catch (Exception e) {
-//            return new LoginResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value());
-//        }
-//    }
 }

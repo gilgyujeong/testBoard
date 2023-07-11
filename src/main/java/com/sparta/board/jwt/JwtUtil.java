@@ -3,7 +3,6 @@ package com.sparta.board.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -69,24 +68,22 @@ public class JwtUtil {
 
     // JWT 토큰 substring
     public String substringToken(String tokenValue) {
-        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) { //hasText 공백이 있는지 null 인지 확인
+        try {
+            tokenValue = URLDecoder.decode(tokenValue, "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode
             return tokenValue.substring(7);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Decode Error");
+            return null;
         }
-        logger.error("Not Found Token");
-        throw new NullPointerException("Not Found Token");
     }
 
     // header 토큰을 가져오기
     public String getTokenFromHeader(HttpServletRequest req) {
         String bearerToken = req.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) { //hasText 공백이 있는지 null 인지 확인
-            try {
-                bearerToken = URLDecoder.decode(bearerToken, "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode
-                return bearerToken.substring(7);
-            } catch (UnsupportedEncodingException e) {
-                return null;
-            }
+            return substringToken(bearerToken);
         }
+        logger.info("Not Found Token");
         return null;
     }
 
@@ -110,22 +107,5 @@ public class JwtUtil {
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-    }
-
-    // HttpServletRequest 에서 Cookie Value : JWT 가져오기
-    public String getTokenFromRequest(HttpServletRequest req) {
-        Cookie[] cookies = req.getCookies();
-        if(cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
-                    try {
-                        return URLDecoder.decode(cookie.getValue(), "UTF-8"); // Encode 되어 넘어간 Value 다시 Decode
-                    } catch (UnsupportedEncodingException e) {
-                        return null;
-                    }
-                }
-            }
-        }
-        return null;
     }
 }

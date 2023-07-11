@@ -1,17 +1,14 @@
 package com.sparta.board.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.board.dto.BoardRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
 @Entity// JPA가 관리할 수 있는 Entity 클래스 지정
 @Getter
-@Setter
 @Table(name = "board")
 @NoArgsConstructor // 기본 생성자
 public class Board extends Timestamped {
@@ -26,10 +23,6 @@ public class Board extends Timestamped {
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
-    @JsonIgnore
-    @Column(name = "password", nullable = false)
-    private String password;
-
     @Column(nullable = false)
     private String username;
 
@@ -39,7 +32,6 @@ public class Board extends Timestamped {
     public Board(BoardRequestDto boardRequestDto, String username) {
         this.title = boardRequestDto.getTitle();
         this.contents = boardRequestDto.getContents();
-        this.password = boardRequestDto.getPassword();
         this.username = username;
     }
 

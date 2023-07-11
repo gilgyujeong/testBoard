@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
      List<Board> findAllByOrderByModifiedAtDesc();
-
-//     List<Board> findAllById(Long id, Class<Board> boardClass);
 }
