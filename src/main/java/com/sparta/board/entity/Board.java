@@ -4,6 +4,8 @@ import com.sparta.board.dto.BoardRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class Board extends Timestamped {
     @Column(nullable = false)
     private String username;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
     public Board(BoardRequestDto boardRequestDto, String username) {

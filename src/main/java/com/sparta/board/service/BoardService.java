@@ -34,13 +34,13 @@ public class BoardService {
     }
 
     public BoardResponseDto getBoard(Long id) {
-        Board board = findBoard(id);
+        Board board = boardRepository.findBoardJoin(id).orElseThrow(() -> new IllegalArgumentException("없습니다."));
         return new BoardResponseDto(board); // 이동은 Dto 로!!!
     }
 
     public List<BoardResponseDto> getBoardList() {
         // DB 조회
-        return boardRepository.findAllByOrderByModifiedAtDesc().stream().map(BoardResponseDto::new).toList();
+        return boardRepository.findAllByOrderByCreatedAtDesc().stream().map(BoardResponseDto::new).toList();
     }
 
     @Transactional

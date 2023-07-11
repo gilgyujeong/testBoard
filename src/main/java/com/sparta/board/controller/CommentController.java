@@ -6,12 +6,8 @@ import com.sparta.board.dto.DeleteResponseDto;
 import com.sparta.board.security.UserDetailsImpl;
 import com.sparta.board.service.CommentService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/board/{boardId}")
